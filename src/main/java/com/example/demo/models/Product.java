@@ -1,10 +1,15 @@
-package com.example.demo;
+package com.example.demo.models;
 
 public class Product {
     private int productId;
     private String productName;
 
     public Product() {}
+
+    public Product(int productId, String productName) {
+        this.productId = productId;
+        this.productName = productName;
+    }
 
     public int getProductId() {
         return productId;

@@ -1,18 +1,18 @@
-package com.example.demo;
+package com.example.demo.daos;
 
+import com.example.demo.models.Product;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+// 🫘
 @Component
 public class ProductDao {
     private BasicDataSource dataSource;
@@ -20,7 +20,7 @@ public class ProductDao {
     @Autowired
     public ProductDao(@Value("${datasource.url}") String url,
                       @Value("${datasource.username}") String userName,
-                      @Value("$DB_PASSWORD") String password) {
+                      @Value("${DB_PASSWORD}") String password) {
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setUrl(url);
         dataSource.setUsername(userName);
@@ -48,11 +48,37 @@ public class ProductDao {
                 result.add(p);
             }
             return result;
+        } catch (SQLException e) {
+            System.err.println("Houston, we have a database problem: " + e);
+        }
+        return null;
+    }
+
+    public Product getProductById(int id) {
+        String sql = """
+                SELECT *
+                FROM Products
+                WHERE ProductID = ?;
+                """;
+
+        try {
+            Connection connection = dataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, id);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+
+            int productID = resultSet.getInt("ProductID");
+            String productName = resultSet.getString("ProductName");
+
+            return new Product(productID, productName);
 
         } catch (SQLException e) {
             System.err.println("Houston, we have a database problem: " + e);
         }
-
         return null;
     }
+
+
 }
