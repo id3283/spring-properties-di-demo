@@ -1,34 +1,32 @@
 package com.example.demo.controllers;
 
-import com.example.demo.daos.ProductDao;
-import com.example.demo.models.Product;
+import com.example.demo.daos.CategoryDao;
+import com.example.demo.models.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
+
 @RestController
 public class CategoryController {
 
-    ProductDao dao;
+    private CategoryDao dao;
 
     @Autowired
-    public CategoryController(ProductDao dao) {
-        this.dao = dao;
+    public CategoryController(CategoryDao categoryDao) {
+        this.dao = categoryDao;
     }
 
-
-    @RequestMapping(value = "/categories", method=RequestMethod.GET)
-
-    public ArrayList<Product> getAllCategories() {
-        return dao.getProducts();
+    @RequestMapping(path="/categories", method = RequestMethod.GET)
+    public ArrayList<Category> getAllCategories() {
+        System.out.println("Yo, I'm in getAllCategories");
+        return this.dao.getCategories();
     }
 
-    @RequestMapping(value = "/categories/{id}", method=RequestMethod.GET)
-
-    public Product getProductById(@PathVariable int id) {
-        return dao.getProductById(id);
+    @RequestMapping(path= "/categories/{identifier}", method = RequestMethod.GET)
+    public Category getCategoryByIdOne(@PathVariable int identifier) {
+        return this.dao.getCategoryById(identifier);
     }
-
 
 }
