@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 
 // 🫘
@@ -28,7 +25,7 @@ public class ProductDao {
         this.dataSource = dataSource;
     }
 
-    public ArrayList<Product> getProducts() {
+    public ArrayList<Product> getAllProducts() {
         String sql = "SELECT * FROM Products;";
 
         try {
@@ -65,9 +62,8 @@ public class ProductDao {
                 WHERE ProductID = ?;
                 """;
 
-        try {
-            Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        try (PreparedStatement preparedStatement = dataSource.getConnection().prepareStatement(sql);){
+
             preparedStatement.setInt(1, id);
 
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -87,4 +83,34 @@ public class ProductDao {
     }
 
 
+    public Product createNewProduct(Product p) {
+        String sql = " INSERT INTO Products (ProductName, CategoryID, UnitPrice) VALUES (?, ?, ?);" ;
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
+
+            preparedStatement.setString(1, p.getProductName());
+            preparedStatement.setInt(2, p.getCategoryId());
+            preparedStatement.setFloat(3, p.getUnitPrice());
+
+            int rowsInserted = preparedStatement.executeUpdate();
+
+            if(rowsInserted != 1) {
+                System.err.println("Something crazy is happening.. number of rows inserted ain't 1 🤪");
+            }
+
+            ResultSet resultSet = preparedStatement.getGeneratedKeys();
+
+            resultSet.next();
+            int productId = resultSet.getInt(1);
+            resultSet.close();
+
+            return getProductById(productId);
+
+        } catch (SQLException e) {
+            System.err.println("Uh, oh.... " + e);;
+        }
+
+        return null;
+    }
 }

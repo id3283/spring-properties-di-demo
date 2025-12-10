@@ -3,10 +3,7 @@ package com.example.demo.controllers;
 import com.example.demo.daos.ProductDao;
 import com.example.demo.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
@@ -24,7 +21,7 @@ public class ProductController {
     //serialization - series
     @RequestMapping(path="/products", method=RequestMethod.GET)
     public ArrayList<Product> getAllProducts() {
-        return this.dao.getProducts();
+        return this.dao.getAllProducts();
     }
 
     @RequestMapping(path="/products/{id}", method=RequestMethod.GET)
@@ -32,4 +29,12 @@ public class ProductController {
         return this.dao.getProductById(id);
     }
 
+
+    @RequestMapping(path="/products", method=RequestMethod.POST)
+    public Product createNewProduct(@RequestBody Product newProduct) {
+//        Product newProduct = new Product();
+//        newProduct.setProductName("Dave's miracle seasoning");
+//        newProduct.setCategoryId(2);
+        return this.dao.createNewProduct(newProduct);
+    }
 }
