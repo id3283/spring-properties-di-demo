@@ -41,10 +41,14 @@ public class ProductDao {
             while(resultSet.next()) {
                 int id = resultSet.getInt("ProductID");
                 String name = resultSet.getString("ProductName");
+                int categoryId = resultSet.getInt("CategoryID");
+                float unitPrice = resultSet.getFloat("UnitPrice");
 
                 Product p = new Product();
                 p.setProductId(id);
                 p.setProductName(name);
+                p.setCategoryId(categoryId);
+                p.setUnitPrice(unitPrice);
                 result.add(p);
             }
             return result;
@@ -71,8 +75,10 @@ public class ProductDao {
 
             int productID = resultSet.getInt("ProductID");
             String productName = resultSet.getString("ProductName");
+            int categoryId = resultSet.getInt("CategoryID");
+            float unitPrice = resultSet.getFloat("UnitPrice");
 
-            return new Product(productID, productName);
+            return new Product(productID, productName, categoryId, unitPrice );
 
         } catch (SQLException e) {
             System.err.println("Houston, we have a database problem: " + e);
