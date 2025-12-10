@@ -3,6 +3,7 @@ package com.example.demo.controllers;
 import com.example.demo.daos.ProductDao;
 import com.example.demo.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -31,10 +32,8 @@ public class ProductController {
 
 
     @RequestMapping(path="/products", method=RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.CREATED)
     public Product createNewProduct(@RequestBody Product newProduct) {
-//        Product newProduct = new Product();
-//        newProduct.setProductName("Dave's miracle seasoning");
-//        newProduct.setCategoryId(2);
         return this.dao.createNewProduct(newProduct);
     }
 }
