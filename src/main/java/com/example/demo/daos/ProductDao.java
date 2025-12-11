@@ -35,7 +35,7 @@ public class ProductDao {
 
             ArrayList<Product> result = new ArrayList<Product>();
 
-            while(resultSet.next()) {
+            while (resultSet.next()) {
                 int id = resultSet.getInt("ProductID");
                 String name = resultSet.getString("ProductName");
                 int categoryId = resultSet.getInt("CategoryID");
@@ -62,7 +62,7 @@ public class ProductDao {
                 WHERE ProductID = ?;
                 """;
 
-        try (PreparedStatement preparedStatement = dataSource.getConnection().prepareStatement(sql);){
+        try (PreparedStatement preparedStatement = dataSource.getConnection().prepareStatement(sql);) {
 
             preparedStatement.setInt(1, id);
 
@@ -74,7 +74,7 @@ public class ProductDao {
             int categoryId = resultSet.getInt("CategoryID");
             float unitPrice = resultSet.getFloat("UnitPrice");
 
-            return new Product(productID, productName, categoryId, unitPrice );
+            return new Product(productID, productName, categoryId, unitPrice);
 
         } catch (SQLException e) {
             System.err.println("Houston, we have a database problem: " + e);
@@ -83,7 +83,7 @@ public class ProductDao {
     }
 
     public Product createNewProduct(Product p) {
-        String sql = " INSERT INTO Products (ProductName, CategoryID, UnitPrice) VALUES (?, ?, ?);" ;
+        String sql = " INSERT INTO Products (ProductName, CategoryID, UnitPrice) VALUES (?, ?, ?);";
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
@@ -94,7 +94,7 @@ public class ProductDao {
 
             int rowsInserted = preparedStatement.executeUpdate();
 
-            if(rowsInserted != 1) {
+            if (rowsInserted != 1) {
                 System.err.println("Something crazy is happening.. number of rows inserted ain't 1 🤪");
             }
 
@@ -107,7 +107,8 @@ public class ProductDao {
             return getProductById(productId);
 
         } catch (SQLException e) {
-            System.err.println("Uh, oh.... " + e);;
+            System.err.println("Uh, oh.... " + e);
+            ;
         }
 
         return null;
@@ -115,10 +116,10 @@ public class ProductDao {
 
     public void updateProductById(int pid, Product p) {
         String sql = """
-            UPDATE Products
-            SET ProductName = ?, CategoryID = ?, UnitPrice = ?
-            WHERE ProductID = ?;
-            """;
+                UPDATE Products
+                SET ProductName = ?, CategoryID = ?, UnitPrice = ?
+                WHERE ProductID = ?;
+                """;
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
 
@@ -129,13 +130,35 @@ public class ProductDao {
 
             int rowsUpdated = preparedStatement.executeUpdate();
             System.out.println("Rows updated: " + rowsUpdated);
-            if(rowsUpdated != 1) {
+            if (rowsUpdated != 1) {
                 System.err.println("Houston, we've got a little problem here updating a product: " + pid);
                 throw new RuntimeException("Number of rows updated didn't equal 1");
             }
 
         } catch (SQLException e) {
             System.err.println("Explosion 💥: " + e);
+        }
+
+    }
+
+    public void deleteProductById(int pid) {
+        String sql = """
+                DELETE FROM Products
+                WHERE ProductID = ?;
+                """;
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
+
+            preparedStatement.setInt(1, pid);
+
+            int rowsDeleted = preparedStatement.executeUpdate();
+            if(rowsDeleted != 1) {
+                throw new RuntimeException("The rows deleted wasn't 1 as expected.  My bad.");
+            }
+
+        } catch(SQLException e) {
+            System.err.println("Holy Sh1#%*  there's a big problem here: " + e);
         }
 
     }

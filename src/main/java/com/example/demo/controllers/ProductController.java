@@ -43,6 +43,14 @@ public class ProductController {
         if (id != p.getProductId()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The product id in the path is different from the product id in the body.");
         }
+
         this.dao.updateProductById(id, p);
     }
+
+    @RequestMapping(path="/products/{id}", method=RequestMethod.DELETE)
+    @ResponseStatus(value = HttpStatus.I_AM_A_TEAPOT)
+    public void deleteProductById(@PathVariable int id) {
+        this.dao.deleteProductById(id);
+    }
+
 }
