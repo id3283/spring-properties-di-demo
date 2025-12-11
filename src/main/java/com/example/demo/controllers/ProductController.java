@@ -22,6 +22,7 @@ public class ProductController {
     //serialization - series
     @RequestMapping(path="/products", method=RequestMethod.GET)
     public ArrayList<Product> getAllProducts() {
+
         return this.dao.getAllProducts();
     }
 
@@ -30,10 +31,13 @@ public class ProductController {
         return this.dao.getProductById(id);
     }
 
-
     @RequestMapping(path="/products", method=RequestMethod.POST)
-    @ResponseStatus(value = HttpStatus.CREATED)
     public Product createNewProduct(@RequestBody Product newProduct) {
+
         return this.dao.createNewProduct(newProduct);
     }
+
+
+
+
 }
