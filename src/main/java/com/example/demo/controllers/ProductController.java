@@ -5,6 +5,7 @@ import com.example.demo.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 
@@ -32,12 +33,16 @@ public class ProductController {
     }
 
     @RequestMapping(path="/products", method=RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.CREATED)
     public Product createNewProduct(@RequestBody Product newProduct) {
-
         return this.dao.createNewProduct(newProduct);
     }
 
-
-
-
+    @RequestMapping(path="/products/{id}", method=RequestMethod.PUT)
+    public void updateProductById(@PathVariable int id, @RequestBody Product p) {
+        if (id != p.getProductId()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The product id in the path is different from the product id in the body.");
+        }
+        this.dao.updateProductById(id, p);
+    }
 }

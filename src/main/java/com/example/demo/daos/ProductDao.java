@@ -82,7 +82,6 @@ public class ProductDao {
         return null;
     }
 
-
     public Product createNewProduct(Product p) {
         String sql = " INSERT INTO Products (ProductName, CategoryID, UnitPrice) VALUES (?, ?, ?);" ;
 
@@ -112,5 +111,32 @@ public class ProductDao {
         }
 
         return null;
+    }
+
+    public void updateProductById(int pid, Product p) {
+        String sql = """
+            UPDATE Products
+            SET ProductName = ?, CategoryID = ?, UnitPrice = ?
+            WHERE ProductID = ?;
+            """;
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
+
+            preparedStatement.setString(1, p.getProductName());
+            preparedStatement.setInt(2, p.getCategoryId());
+            preparedStatement.setFloat(3, p.getUnitPrice());
+            preparedStatement.setInt(4, p.getProductId());
+
+            int rowsUpdated = preparedStatement.executeUpdate();
+            System.out.println("Rows updated: " + rowsUpdated);
+            if(rowsUpdated != 1) {
+                System.err.println("Houston, we've got a little problem here updating a product: " + pid);
+                throw new RuntimeException("Number of rows updated didn't equal 1");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Explosion 💥: " + e);
+        }
+
     }
 }
